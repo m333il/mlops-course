@@ -5,7 +5,7 @@ import torch
 
 
 def get_model(model_name, id2label, label2id):
-    logging.info(f"\nget_model: start")
+    logging.info(f"get_model: start")
     model = AutoModelForImageClassification.from_pretrained(
         model_name, num_labels=len(id2label),
         id2label=id2label, label2id=label2id,
@@ -16,14 +16,14 @@ def get_model(model_name, id2label, label2id):
 
 
 def get_image_processor(model_name):
-    logging.info(f"\nget_image_processor: start")
+    logging.info(f"get_image_processor: start")
     processor = AutoImageProcessor.from_pretrained(model_name)
     logging.info(f"get_image_processor: finished")
     return processor
 
 
 def get_optimizer(model, config):
-    logging.info(f"\nget_optimizer: start")
+    logging.info(f"get_optimizer: start")
     lr = config['learning_rate']
     weight_decay = config['weight_decay']
     
