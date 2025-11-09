@@ -45,3 +45,11 @@
 1. Baseline модель
 2. Улучшение качества
 3. Оптимизация модели для продакшена
+
+
+## Возпроизводимость
+1. Install anaconda
+2. run: conda env create -f environment.yml
+3. run: conda activate test-env
+4. run: python train.py
+5. Final accuracy: 0.7322, model saved to models/resnet-18
