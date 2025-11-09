@@ -1,6 +1,6 @@
 import yaml
 import argparse
-from src.trainer import Trainer
+from src.trainer import create_trainer_from_config
 from src.utils import init_logging, set_global_seed
 
 
@@ -14,5 +14,5 @@ if __name__ == "__main__":
     init_logging()
     set_global_seed(config['run']['seed'])
     
-    trainer = Trainer(config)
+    trainer = create_trainer_from_config(config)
     trainer.train()

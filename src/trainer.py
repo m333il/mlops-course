@@ -11,20 +11,29 @@ from src.models import get_optimizer
 
 
 class Trainer:
-    def __init__(self, config):
+    def __init__(
+        self, model, optimizer, 
+        train_loader, val_loader, 
+        device, num_epochs,
+        output_dir, processor,
+        id2label, label2id
+    ):
         logging.info(f'Trainer.__init__: start')
-        self.config = config
-        self.device = torch.device(config['training']['device'])
-        self.num_epochs = self.config['training']['num_train_epochs']
-        self.output_dir = self.config['training']['output_dir']
+        self.device = device
+        self.num_epochs = num_epochs
+        self.output_dir = output_dir
+        self.train_dl = train_loader
+        self.val_dl = val_loader
+        self.processor = processor
+        self.id2label = id2label
+        self.label2id = label2id
+        self.model = model
+        self.optimizer = optimizer
+        
         os.makedirs(self.output_dir, exist_ok=True)
-
+        
         logging.info(f'Cuda is available: {torch.cuda.is_available()}')
         logging.info(f'Device: {self.device}')
-
-        self.train_dl, self.val_dl, self.processor, self.id2label, self.label2id = get_dataloaders(self.config)
-        self.model = get_model(self.config['model']['name'], self.id2label, self.label2id).to(self.device)
-        self.optimizer = get_optimizer(self.model, self.config['training'])
         logging.info(f'Trainer.__init__: finish')
 
 
@@ -100,3 +109,32 @@ class Trainer:
         self.model.save_pretrained(self.output_dir)
         self.processor.save_pretrained(self.output_dir)
         logging.info(f'Trainer.save_model: finish')
+
+
+def create_trainer_from_config(config):
+    logging.info('create_trainer_from_config: start')
+    
+    device = torch.device(config['training']['device'])
+    num_epochs = config['training']['num_train_epochs']
+    output_dir = config['training']['output_dir']
+    
+    train_loader, val_loader, processor, id2label, label2id = get_dataloaders(config)
+    
+    model = get_model(config['model']['name'], id2label, label2id).to(device)
+    optimizer = get_optimizer(model, config['training'])
+    
+    trainer = Trainer(
+        model=model,
+        optimizer=optimizer,
+        train_loader=train_loader,
+        val_loader=val_loader,
+        device=device,
+        num_epochs=num_epochs,
+        output_dir=output_dir,
+        processor=processor,
+        id2label=id2label,
+        label2id=label2id
+    )
+    
+    logging.info('create_trainer_from_config: finish')
+    return trainer
