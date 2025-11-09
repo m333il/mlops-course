@@ -25,24 +25,21 @@
 - **Пропускная способность** ≥ 100 запросов/сек
 - **Доля неуспешных запросов** ≤ 1%
 - **Использование памяти** ≤ 2 GB
-- **Использование CPU** ≤ 80%
 
 ## Набор данных
 
 ### DeepFashion Dataset
-- **Источник**: [DeepFashion: In-shop Clothes Retrieval](http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion.html)
-- **Размер**: ~290,000 изображений для классификации
-- **Категории**: 50 классов (dress, shirt, jeans, skirt и т.д.)
+- **Источник**: [deepfashion2 datasest](https://github.com/switchablenorms/DeepFashion2)
+- [HuggingFace link](https://huggingface.co/datasets/SaffalPoosh/deepFashion-with-masks)
+- **Размер**: 40658 изображений для классификации
+- **Категории**: 17 классов (dresses, shorts, cardigans и т.д.)
 
 
-### Предобработка
-- Изменение размера изображений до 224x224
-- Нормализация по ImageNet statistics (mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-- Аугментация для обучающей выборки:
-  - Random horizontal flip
-  - Random rotation (±15°)
-  - Random crop
-  - Color jitter (brightness, contrast, saturation)
+## Стек
+  - Базовая модель: [ResNet18](https://huggingface.co/microsoft/resnet-18) предобученная на [ImageNet](https://huggingface.co/datasets/ILSVRC/imagenet-1k)
+  - Размер изображений: 224x224 пикселей
+  - Изображения нормализуются (ImageNet statistics)
+
 
 ## План экспериментов
 1. Baseline модель

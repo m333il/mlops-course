@@ -1,0 +1,20 @@
+data:
+  dataset_name: "SaffalPoosh/deepFashion-with-masks"
+  image_column: "images"
+  label_column: "cloth_type"
+  split_name: "train"
+  validation_size: 0.1
+
+model:
+  name: "microsoft/resnet-18"
+
+training:
+  output_dir: "./models/resnet-18"
+  num_train_epochs: 5
+  learning_rate: 5.0e-5
+  weight_decay: 0.01
+  batch_size: 32
+  device: "cuda:4"
+
+run:
+  seed: 42
