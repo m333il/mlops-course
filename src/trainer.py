@@ -6,7 +6,7 @@ from tqdm import tqdm, trange
 from sklearn.metrics import accuracy_score, classification_report
 
 from src.dataset import get_dataloaders
-from src.models import get_model, get_image_processor
+from src.models import get_model
 from src.models import get_optimizer
 
 
