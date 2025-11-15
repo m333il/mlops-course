@@ -33,7 +33,7 @@ def load_and_validate_dataset(config: Dict) -> Tuple:
 
 
 def prepare_label_mappings(unique_labels: list) -> Tuple[Dict[str, int], Dict[int, str]]:
-    label2id = {label: i for i, label in enumerate(unique_labels)}
+    label2id = {label: i+1 for i, label in enumerate(unique_labels)}
     id2label = {i: label for label, i in label2id.items()}
     
     logging.debug(f"Created label mappings for {len(unique_labels)} classes")
