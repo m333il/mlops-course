@@ -91,10 +91,7 @@ def create_dataset(split, processor, image_column, label_column, batch_size, shu
         batch_size=batch_size,
         collate_fn=_collate_fn,
         shuffle=shuffle,
-        num_workers=4,
-        pin_memory=True,
-        prefetch_factor=2,
-        persistent_workers=True,
+        num_workers=0,
     )
     
     logging.debug(f"Created DataLoader: batch_size={batch_size}, shuffle={shuffle}")
