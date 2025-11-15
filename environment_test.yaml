@@ -7,8 +7,8 @@ channels:
 dependencies:
   - python==3.12.12
   - pip==25.2
-  - pytorch==2.9.0
-  - torchvision==0.24.0
+  - pytorch==2.2.2
+  - torchvision==0.17.2
   - cpuonly
   - numpy==2.3.4
   - transformers==4.57.1
