@@ -10,7 +10,7 @@ dependencies:
   - pytorch==2.2.2
   - torchvision==0.17.2
   - cpuonly
-  - numpy==2.3.4
+  - numpy==1.26
   - transformers==4.57.1
   - datasets==4.4.1
   - scikit-learn==1.7.2
