@@ -17,7 +17,7 @@ jobs:
     - name: Setup Micromamba
       uses: mamba-org/setup-micromamba@v1
       with:
-        environment-file: environment.yml
+        environment-file: environment_test.yaml
         cache-environment: true
 
     - name: Display environment info
