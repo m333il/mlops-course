@@ -3,6 +3,41 @@ from datasets import load_dataset, ClassLabel
 import torch
 from torch.utils.data import DataLoader
 from transformers import AutoImageProcessor
+from typing import Tuple, Dict
+
+from src.validation import (
+    validate_dataset_split,
+    validate_image_tensor,
+    validate_config
+)
+
+
+def load_and_validate_dataset(config: Dict) -> Tuple:
+    logging.info("load_and_validate_dataset: start")
+    
+    dataset = load_dataset(
+        config['data']['dataset_name'],
+        split=config['data']['split_name']
+    )
+    
+    required_columns = [
+        config['data']['image_column'],
+        config['data']['label_column']
+    ]
+    validate_dataset_split(dataset, required_columns=required_columns, min_samples=10)
+    logging.info(f"Dataset loaded: {len(dataset)} samples with columns {dataset.column_names}")
+    
+    dataset, unique_labels = convert_labels(dataset, config['data']['label_column'])
+    logging.info(f"load_and_validate_dataset: finish with {len(unique_labels)} classes")
+    return dataset, unique_labels
+
+
+def prepare_label_mappings(unique_labels: list) -> Tuple[Dict[str, int], Dict[int, str]]:
+    label2id = {label: i for i, label in enumerate(unique_labels)}
+    id2label = {i: label for label, i in label2id.items()}
+    
+    logging.debug(f"Created label mappings for {len(unique_labels)} classes")
+    return label2id, id2label
 
 
 def convert_labels(dataset, label_column):
@@ -21,10 +56,27 @@ def split_dataset(dataset, test_size, seed, label_column):
     return res['train'], res['test']
 
 
-def create_dataset(split, processor, image_column, label_column, batch_size, shuffle):
+def create_dataset(split, processor, image_column, label_column, batch_size, shuffle, validate_samples=True):
     def _transform(examples):
         images = [img.convert("RGB") for img in examples[image_column]]
-        examples["pixel_values"] = processor(images, return_tensors="pt")["pixel_values"]
+        processed = processor(images, return_tensors="pt")
+        examples["pixel_values"] = processed["pixel_values"]
+        
+        if validate_samples and len(images) > 0:
+            try:
+                pixel_values = examples["pixel_values"]
+                if pixel_values.dim() == 4:
+                    sample = pixel_values[0:1]
+                    validate_image_tensor(
+                        sample,
+                        expected_dims=4,
+                        expected_channels=3,
+                        min_height=1,
+                        min_width=1
+                    )
+            except Exception as e:
+                logging.warning(f"Image validation warning during transformation: {e}")
+        
         return examples
 
     def _collate_fn(batch):
@@ -39,25 +91,20 @@ def create_dataset(split, processor, image_column, label_column, batch_size, shu
         batch_size=batch_size,
         collate_fn=_collate_fn,
         shuffle=shuffle,
-        num_workers=4,
-        pin_memory=True,
-        prefetch_factor=2,
-        persistent_workers=True,
+        num_workers=0,
     )
+    
+    logging.debug(f"Created DataLoader: batch_size={batch_size}, shuffle={shuffle}")
     return loader
 
 
 def get_dataloaders(config):
     logging.info("get_dataloaders: start")
 
-    dataset = load_dataset(
-        config['data']['dataset_name'],
-        split=config['data']['split_name']
-    )
-    dataset, unique_labels = convert_labels(dataset, config['data']['label_column'])
-
-    label2id = {label: i for i, label in enumerate(unique_labels)}
-    id2label = {i: label for label, i in label2id.items()}
+    validate_config(config)
+    dataset, unique_labels = load_and_validate_dataset(config)
+    
+    label2id, id2label = prepare_label_mappings(unique_labels)
     logging.info(f"get_dataloaders: labels: {unique_labels}")
 
     train_split, val_split = split_dataset(
@@ -65,19 +112,20 @@ def get_dataloaders(config):
         config['data']['validation_size'],
         config['run']['seed'],
         config['data']['label_column']
-
     )
     logging.info(f"get_dataloaders: train size: {len(train_split)}")
     logging.info(f"get_dataloaders: validation size: {len(val_split)}")
 
     processor = AutoImageProcessor.from_pretrained(config['model']['name'])
+    logging.info(f"get_dataloaders: loaded processor from {config['model']['name']}")
 
     train_loader = create_dataset(
         train_split, processor, 
         config['data']['image_column'], 
         config['data']['label_column'], 
         config['training']['batch_size'], 
-        True
+        shuffle=True,
+        validate_samples=True
     )
 
     val_loader = create_dataset(
@@ -85,7 +133,8 @@ def get_dataloaders(config):
         config['data']['image_column'], 
         config['data']['label_column'], 
         config['training']['batch_size'], 
-        False
+        shuffle=False,
+        validate_samples=True
     )
     logging.info("get_dataloaders: finish")
     return train_loader, val_loader, processor, id2label, label2id

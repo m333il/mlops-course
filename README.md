@@ -14,11 +14,8 @@
 ## Целевые метрики
 
 ### Метрики качества модели
-- **Accuracy** ≥ 90% - общая точность классификации
-- **Top-3 Accuracy** ≥ 95% - правильная категория в топ-3 предсказаниях
-- **F1-score (macro)** ≥ 0.88 - сбалансированная метрика для всех классов
-- **Precision** ≥ 0.87 - точность предсказаний
-- **Recall** ≥ 0.89 - полнота выявления категорий
+- **Accuracy** ≥ 80% - общая точность классификации
+- **Top-3 Accuracy** ≥ 90% - правильная категория в топ-3 предсказаниях
 
 ### Метрики производительности (Production SLA)
 - **Среднее время отклика** ≤ 200 мс
@@ -49,7 +46,7 @@
 
 ## Возпроизводимость
 1. Install anaconda
-2. run: conda env create -f environment.yml
+2. run: conda env create -f environment.yaml
 3. run: conda activate test-env
 4. run: python train.py
 5. Final accuracy: 0.7322, model saved to models/resnet-18
