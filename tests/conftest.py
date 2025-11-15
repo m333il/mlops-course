@@ -25,7 +25,7 @@ def mock_config():
             'learning_rate': 5.0e-5,
             'weight_decay': 0.01,
             'batch_size': 32,
-            'device': 'cuda:4'
+            'device': 'cpu'
         },
         'run': {
             'seed': 42
