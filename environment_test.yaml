@@ -1,15 +1,13 @@
 name: test-env
 channels:
   - pytorch
-  - nvidia
   - conda-forge
-  - nodefaults
 dependencies:
   - python==3.12.12
   - pip==25.2
+  - cpuonly
   - pytorch==2.2.2
   - torchvision==0.17.2
-  - cpuonly
   - numpy==1.26
   - transformers==4.57.1
   - datasets==4.4.1
