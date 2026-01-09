@@ -1,0 +1,32 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Micromamba
+      uses: mamba-org/setup-micromamba@v1
+      with:
+        environment-file: environment_test.yaml
+        cache-environment: true
+
+    - name: Display environment info
+      shell: bash -el {0}
+      run: |
+        conda info
+        conda list
+    
+    - name: Run tests
+      shell: bash -el {0}
+      run: |
+        pytest tests/ -v --tb=short
