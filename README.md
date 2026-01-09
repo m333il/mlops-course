@@ -64,7 +64,7 @@ cd mlops-course
 ```bash
 conda env create -f environment.yaml
 
-conda activate test-env
+conda activate mlops
 ```
 
 ### 3. Настройка DVC credentials
@@ -111,6 +111,6 @@ pytest tests/ -v
 
 ## Текущие результаты
 
-- **Accuracy**: 0.7346
+- **Accuracy**: 0.7398
 - **Модель**: ResNet-18 fine-tuned
 - **Эпохи**: 5

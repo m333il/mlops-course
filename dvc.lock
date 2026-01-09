@@ -9,8 +9,8 @@ stages:
       size: 359
     - path: src/prepare_data.py
       hash: md5
-      md5: 0af9f92ac78a2876bfc7830f967580f1
-      size: 2118
+      md5: 1b7a1eb767d89a85688dc72a1019a106
+      size: 2015
     - path: src/utils.py
       hash: md5
       md5: ef2957e251db2713405205b0cdd89c1e
@@ -65,11 +65,11 @@ stages:
     outs:
     - path: metrics.json
       hash: md5
-      md5: fdd8f7ac361051ed03c8e1b78847f8d8
-      size: 100
+      md5: 5e6ab602d03a9f1269d87669a8f7a441
+      size: 101
     - path: models/resnet-18
       hash: md5
-      md5: 843e00857c8dc832e0a835b31a6d94f0.dir
+      md5: e38fdfc7db7131aadac186d3ca15bcf6.dir
       size: 44796902
       nfiles: 3
   evaluate:
@@ -87,7 +87,7 @@ stages:
       nfiles: 9
     - path: models/resnet-18
       hash: md5
-      md5: 843e00857c8dc832e0a835b31a6d94f0.dir
+      md5: e38fdfc7db7131aadac186d3ca15bcf6.dir
       size: 44796902
       nfiles: 3
     - path: src/dataset.py
@@ -105,5 +105,5 @@ stages:
     outs:
     - path: evaluation_metrics.json
       hash: md5
-      md5: aa98fc3976b0005d056694b34c792ff5
-      size: 2724
+      md5: 9287f37ec97359ee710316976e54f3fc
+      size: 2774
