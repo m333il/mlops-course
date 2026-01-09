@@ -113,4 +113,4 @@ pytest tests/ -v
 
 - **Accuracy**: 0.7398
 - **Модель**: ResNet-18 fine-tuned
-- **Эпохи**: 5
+- **Эпохи**: 5 
