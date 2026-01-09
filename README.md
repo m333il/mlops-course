@@ -49,4 +49,4 @@
 2. run: conda env create -f environment.yaml
 3. run: conda activate test-env
 4. run: python train.py
-5. Final accuracy: 0.7322, model saved to models/resnet-18
+5. Final accuracy: 0.7346, model saved to models/resnet-18
