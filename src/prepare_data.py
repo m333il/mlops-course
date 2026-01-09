@@ -1,7 +1,3 @@
-"""
-Data preparation stage for DVC pipeline.
-Downloads dataset from HuggingFace and saves locally.
-"""
 import yaml
 import argparse
 import logging
