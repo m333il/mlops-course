@@ -4,12 +4,20 @@ import torch
 from torch.utils.data import DataLoader
 from transformers import AutoImageProcessor
 from typing import Tuple, Dict
+import os
 
 from src.validation import (
     validate_dataset_split,
     validate_image_tensor,
     validate_config
 )
+
+def load_processed_dataset(processed_path"data/processed/dataset"):
+    """load dataset from disk"""
+    from datasets import load_from_disk, ClassLabel
+    logging.info(f"Loading processed dataset from {processed_path}")
+    dataset = load_from_disk(processed_path)
+    return dataset
 
 
 def load_and_validate_dataset(config: Dict) -> Tuple:
@@ -98,11 +106,26 @@ def create_dataset(split, processor, image_column, label_column, batch_size, shu
     return loader
 
 
-def get_dataloaders(config):
+def get_dataloaders(config, use_local=True):
     logging.info("get_dataloaders: start")
 
     validate_config(config)
-    dataset, unique_labels = load_and_validate_dataset(config)
+    
+    label_column = config['data']['label_column']
+    
+    if use_local and os.path.exists("data/processed/dataset"):
+        dataset = load_processed_dataset("data/processed/dataset")
+
+        unique_labels = sorted(set(dataset[label_column]))
+        
+        if not isinstance(dataset.features[label_column], ClassLabel):
+            logging.info("Converting label column to ClassLabel")
+            class_label_feature = ClassLabel(names=unique_labels)
+            dataset = dataset.cast_column(label_column, class_label_feature)
+        
+        logging.info(f"Loaded local dataset: {len(dataset)} samples")
+    else:
+        dataset, unique_labels = load_and_validate_dataset(config)
     
     label2id, id2label = prepare_label_mappings(unique_labels)
     logging.info(f"get_dataloaders: labels: {unique_labels}")
@@ -111,7 +134,7 @@ def get_dataloaders(config):
         dataset,
         config['data']['validation_size'],
         config['run']['seed'],
-        config['data']['label_column']
+        label_column
     )
     logging.info(f"get_dataloaders: train size: {len(train_split)}")
     logging.info(f"get_dataloaders: validation size: {len(val_split)}")
@@ -122,7 +145,7 @@ def get_dataloaders(config):
     train_loader = create_dataset(
         train_split, processor, 
         config['data']['image_column'], 
-        config['data']['label_column'], 
+        label_column, 
         config['training']['batch_size'], 
         shuffle=True,
         validate_samples=True
@@ -131,7 +154,7 @@ def get_dataloaders(config):
     val_loader = create_dataset(
         val_split, processor, 
         config['data']['image_column'], 
-        config['data']['label_column'], 
+        label_column, 
         config['training']['batch_size'], 
         shuffle=False,
         validate_samples=True
