@@ -1,14 +1,10 @@
-"""
-Evaluation stage for DVC pipeline.
-Loads trained model and computes final metrics.
-"""
 import yaml
 import argparse
 import logging
 import json
 import os
 import torch
-from datasets import load_from_disk
+from datasets import load_from_disk, ClassLabel
 from torch.utils.data import DataLoader
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from transformers import AutoModelForImageClassification, AutoImageProcessor
@@ -36,18 +32,25 @@ def evaluate_model(config):
     logging.info("Loading processed dataset")
     dataset = load_from_disk("data/processed/dataset")
     
+    label_column = config['data']['label_column']
+    unique_labels = sorted(set(dataset[label_column]))
+    
+    if not isinstance(dataset.features[label_column], ClassLabel):
+        logging.info("Converting label column to ClassLabel for stratified split")
+        dataset = dataset.cast_column(label_column, ClassLabel(names=unique_labels))
+    
     _, val_split = split_dataset(
         dataset,
         test_size=config['data']['validation_size'],
         seed=config['run']['seed'],
-        label_column=config['data']['label_column']
+        label_column=label_column
     )
     
     val_loader = create_dataset(
         val_split,
         processor,
         image_column=config['data']['image_column'],
-        label_column=config['data']['label_column'],
+        label_column=label_column,
         batch_size=config['training']['batch_size'],
         shuffle=False,
         validate_samples=False
