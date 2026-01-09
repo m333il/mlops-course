@@ -1,0 +1,43 @@
+stages:
+  prepare:
+    cmd: python -m src.prepare_data --config configs/base.yaml
+    deps:
+      - src/prepare_data.py
+      - src/utils.py
+      - configs/base.yaml
+    outs:
+      - data/processed/dataset:
+          cache: true
+      - data/processed/metadata.json:
+          cache: false
+
+  train:
+    cmd: python train.py --config configs/base.yaml --metrics_output metrics.json
+    deps:
+      - train.py
+      - src/trainer.py
+      - src/models.py
+      - src/dataset.py
+      - src/utils.py
+      - src/validation.py
+      - configs/base.yaml
+      - data/processed/dataset
+    outs:
+      - models/resnet-18:
+          cache: true
+    metrics:
+      - metrics.json:
+          cache: false
+
+  evaluate:
+    cmd: python -m src.evaluate --config configs/base.yaml --output evaluation_metrics.json
+    deps:
+      - src/evaluate.py
+      - src/dataset.py
+      - src/utils.py
+      - configs/base.yaml
+      - models/resnet-18
+      - data/processed/dataset
+    metrics:
+      - evaluation_metrics.json:
+          cache: false

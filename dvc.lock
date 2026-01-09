@@ -1,0 +1,109 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python -m src.prepare_data --config configs/base.yaml
+    deps:
+    - path: configs/base.yaml
+      hash: md5
+      md5: bc9f9179fc77ff2bfc0956776884a71c
+      size: 359
+    - path: src/prepare_data.py
+      hash: md5
+      md5: 1b7a1eb767d89a85688dc72a1019a106
+      size: 2015
+    - path: src/utils.py
+      hash: md5
+      md5: ef2957e251db2713405205b0cdd89c1e
+      size: 635
+    outs:
+    - path: data/processed/dataset
+      hash: md5
+      md5: 2ad97d914f85ed2928017fbb31fb6988.dir
+      size: 1815540642
+      nfiles: 6
+    - path: data/processed/metadata.json
+      hash: md5
+      md5: 055eb369d1e66845f7800de89e1af573
+      size: 587
+  train:
+    cmd: python train.py --config configs/base.yaml --metrics_output 
+      metrics.json
+    deps:
+    - path: configs/base.yaml
+      hash: md5
+      md5: bc9f9179fc77ff2bfc0956776884a71c
+      size: 359
+    - path: data/processed/dataset
+      hash: md5
+      md5: b38cd7081149f504d85f33de19aa15f4.dir
+      size: 3630644890
+      nfiles: 9
+    - path: src/dataset.py
+      hash: md5
+      md5: b7e1df650ee0daf8cf3dbf3c673d5a1c
+      size: 5657
+    - path: src/models.py
+      hash: md5
+      md5: 427ea9a3a647531f341e4d96fd60b9c6
+      size: 1025
+    - path: src/trainer.py
+      hash: md5
+      md5: 4c38711515ca4e38396ad1e6b0010f41
+      size: 5506
+    - path: src/utils.py
+      hash: md5
+      md5: ef2957e251db2713405205b0cdd89c1e
+      size: 635
+    - path: src/validation.py
+      hash: md5
+      md5: 9b571b1a7f9625fa4027df9d8fe635f5
+      size: 4666
+    - path: train.py
+      hash: md5
+      md5: 76797c9cacc6db0c004c8feaac6b6e8b
+      size: 1129
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: 5e6ab602d03a9f1269d87669a8f7a441
+      size: 101
+    - path: models/resnet-18
+      hash: md5
+      md5: e38fdfc7db7131aadac186d3ca15bcf6.dir
+      size: 44796902
+      nfiles: 3
+  evaluate:
+    cmd: python -m src.evaluate --config configs/base.yaml --output 
+      evaluation_metrics.json
+    deps:
+    - path: configs/base.yaml
+      hash: md5
+      md5: bc9f9179fc77ff2bfc0956776884a71c
+      size: 359
+    - path: data/processed/dataset
+      hash: md5
+      md5: b38cd7081149f504d85f33de19aa15f4.dir
+      size: 3630644890
+      nfiles: 9
+    - path: models/resnet-18
+      hash: md5
+      md5: e38fdfc7db7131aadac186d3ca15bcf6.dir
+      size: 44796902
+      nfiles: 3
+    - path: src/dataset.py
+      hash: md5
+      md5: b7e1df650ee0daf8cf3dbf3c673d5a1c
+      size: 5657
+    - path: src/evaluate.py
+      hash: md5
+      md5: b1ccd27a5ac56e59a17f7a6cb913a440
+      size: 4018
+    - path: src/utils.py
+      hash: md5
+      md5: ef2957e251db2713405205b0cdd89c1e
+      size: 635
+    outs:
+    - path: evaluation_metrics.json
+      hash: md5
+      md5: 9287f37ec97359ee710316976e54f3fc
+      size: 2774

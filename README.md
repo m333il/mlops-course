@@ -39,14 +39,78 @@
 
 
 ## План экспериментов
-1. Baseline модель
-2. Улучшение качества
-3. Оптимизация модели для продакшена
+1. Baseline модель (ResNet-18)
+2. Улучшение качества 
+3. Оптимизация модели для продакшена 
 
+---
+
+## Хранение данных и моделей
+
+Данные и модели хранятся в DVC remote на DagsHub: https://dagshub.com/m333il/mlops-course
+
+---
 
 ## Возпроизводимость
-1. Install anaconda
-2. run: conda env create -f environment.yaml
-3. run: conda activate test-env
-4. run: python train.py
-5. Final accuracy: 0.7322, model saved to models/resnet-18
+### 1. Клонирование репозитория
+
+```bash
+git clone https://github.com/m333il/mlops-course.git
+cd mlops-course
+```
+
+### 2. Настройка окружения
+
+```bash
+conda env create -f environment.yaml
+
+conda activate mlops
+```
+
+### 3. Настройка DVC credentials
+
+Для загрузки данных необходимо настроить доступ к DagsHub:
+
+```bash
+export AWS_ACCESS_KEY_ID=<your_dagshub_token>
+export AWS_SECRET_ACCESS_KEY=<your_dagshub_token>
+```
+
+**Как получить токен DagsHub:**
+1. Создайте аккаунт на [dagshub.com](https://dagshub.com) (можно войти с помощью github)
+2. Перейдите в Your Settings → Tokens
+3. Создайте новый токен или используйте существующий
+
+### 4. Загрузка данных и модели
+
+```bash
+dvc pull
+```
+
+### 5. Воспроизведение пайплайна
+
+```bash
+# Запуск всего пайплайна
+dvc repro
+
+# Или отдельных стадий
+dvc repro prepare
+dvc repro train
+dvc repro evaluate
+```
+
+---
+
+## Запуск тестов
+
+```bash
+pytest tests/ -v
+```
+
+---
+
+## Текущие результаты
+
+- **Accuracy**: 0.7398
+- **Модель**: ResNet-18 fine-tuned
+- **Эпохи**: 5 
