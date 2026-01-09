@@ -12,7 +12,7 @@ from src.validation import (
     validate_config
 )
 
-def load_processed_dataset(processed_path"data/processed/dataset"):
+def load_processed_dataset(processed_path="data/processed/dataset"):
     """load dataset from disk"""
     from datasets import load_from_disk, ClassLabel
     logging.info(f"Loading processed dataset from {processed_path}")
