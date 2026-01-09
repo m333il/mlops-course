@@ -8,6 +8,7 @@ dependencies:
   - cpuonly
   - pytorch==2.2.2
   - torchvision==0.17.2
+  - mkl>=2022.1.0
   - numpy==1.26
   - transformers==4.57.1
   - datasets==4.4.1
