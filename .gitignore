@@ -2,3 +2,7 @@
 
 data/
 models/
+
+secret.txt
+
+mlruns/
