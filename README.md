@@ -51,7 +51,62 @@
 
 ---
 
-## Возпроизводимость
+## MLflow Tracking
+
+### Настройка
+
+Эксперименты трекаются через MLflow и DagsHub.
+
+**Настройка environment variables:**
+
+```bash
+export MLFLOW_TRACKING_URI=https://dagshub.com/m333il/mlops-course.mlflow
+export MLFLOW_TRACKING_USERNAME=<your_dagshub_username>
+export MLFLOW_TRACKING_PASSWORD=<your_dagshub_token>
+```
+
+**Как получить токен DagsHub:**
+1. Войдите на [dagshub.com](https://dagshub.com) (можно через github)
+2. Перейдите в Your Settings -> Tokens
+3. Создайте новый токен или используйте существующий
+
+### Просмотр экспериментов
+
+**Через DagsHub UI:**
+- Откройте https://dagshub.com/m333il/mlops-course
+- Перейдите во вкладку "Experiments"
+
+**MLflow UI:**
+- Откройте https://dagshub.com/m333il/mlops-course.mlflow/
+- Во вкладке "Experiments" перейти в "fashion-classification"
+
+### Что логируется
+
+**Параметры:**
+- `model_name` - название модели
+- `dataset_name` - название датасета
+- `learning_rate`, `weight_decay`, `batch_size`, `num_epochs`
+- `seed` - random seed для воспроизводимости
+
+**Метрики:**
+- `train_loss` - loss на каждой эпохе
+- `val_accuracy` - accuracy на валидации после каждой эпохи
+- `final_accuracy` - финальная accuracy
+
+**Артефакты:**
+- `model/` - обученная модель (через mlflow.transformers)
+- `config/base.yaml` - конфигурация эксперимента
+- `metrics.json` - метрики в JSON формате
+- `dvc.lock` - для связи с версией данных
+
+**Теги:**
+- `dvc_data_hash` - хеш dvc.lock для связи эксперимента с версией данных
+- `git_commit` - git commit hash
+
+---
+
+## Воспроизводимость
+
 ### 1. Клонирование репозитория
 
 ```bash
@@ -67,19 +122,21 @@ conda env create -f environment.yaml
 conda activate mlops
 ```
 
-### 3. Настройка DVC credentials
+### 3. Настройка credentials
 
-Для загрузки данных необходимо настроить доступ к DagsHub:
-
+**Для DVC (загрузка данных):**
 ```bash
 export AWS_ACCESS_KEY_ID=<your_dagshub_token>
 export AWS_SECRET_ACCESS_KEY=<your_dagshub_token>
 ```
 
-**Как получить токен DagsHub:**
-1. Создайте аккаунт на [dagshub.com](https://dagshub.com) (можно войти с помощью github)
-2. Перейдите в Your Settings → Tokens
-3. Создайте новый токен или используйте существующий
+**Для MLflow (трекинг экспериментов):**
+```bash
+export MLFLOW_TRACKING_URI=https://dagshub.com/m333il/mlops-course.mlflow
+export MLFLOW_TRACKING_USERNAME=<your_dagshub_username>
+export MLFLOW_TRACKING_PASSWORD=<your_dagshub_token>
+```
+*Способ получения your_dagshub_token описан выше.*
 
 ### 4. Загрузка данных и модели
 
