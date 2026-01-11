@@ -59,7 +59,7 @@ def predict_single_image(
 ):
     image = Image.open(image_path).convert("RGB")
     
-    inputs = processor(image, return_tensors="pt")
+    inputs = processor(images=[image], return_tensors="pt")
     inputs = {k: v.to(device) for k, v in inputs.items()}
     
     with torch.no_grad():
