@@ -6,3 +6,6 @@ models/
 secret.txt
 
 mlruns/
+
+test_input/
+test_output/
