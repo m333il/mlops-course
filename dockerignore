@@ -1,0 +1,25 @@
+.git/
+.gitignore
+
+.dvc/cache/
+.dvc/tmp/
+
+data/
+
+mlruns/
+
+*__pycache__/
+
+.pytest_cache/
+tests/
+
+.vscode/
+
+# Environment
+environment.yaml
+environment_test.yaml
+
+
+*.md
+
+.github/
