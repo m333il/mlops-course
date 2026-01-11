@@ -9,3 +9,7 @@ mlruns/
 
 test_input/
 test_output/
+
+model-store/
+serve/model.pt
+serve/index_to_name.json
