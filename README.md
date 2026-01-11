@@ -164,6 +164,57 @@ dvc repro evaluate
 pytest tests/ -v
 ```
 
+
+---
+
+## Docker
+### Описание
+
+Скрипт `src/predict.py` принимает папку с изображениями и сохраняет предсказания в CSV файл.
+
+### Требования
+
+- Docker
+- Модель должна быть скачана локально (`dvc pull models/resnet-18`)
+
+### Сборка образа
+
+```bash
+# Сначала скачайте модель
+dvc pull models/resnet-18
+
+# Соберите Docker-образ
+docker build -t ml-app:v1 .
+```
+
+### Запуск инференса
+
+```bash
+# Создайте папки для входных/выходных данных
+mkdir -p input output
+
+# Положите изображения в папку input
+
+# Запустите контейнер
+docker run -v $(pwd)/input:/data/input -v $(pwd)/output:/data/output ml-app:v1
+```
+
+Результат будет сохранён в `output/preds.csv`.
+
+### Формат данных
+
+**Входные данные:**
+- Папка с изображениями
+- Поддерживаемые форматы: `.jpg`, `.jpeg`, `.png`, `.webp`, `.bmp`
+
+**Выходные данные (preds.csv):**
+```csv
+image_name,predicted_label
+photo1.jpg,Dresses
+photo2.jpg,Tees_Tanks
+photo3.jpg,Shorts
+```
+
 ---
 
 ## Текущие результаты
