@@ -1,11 +1,18 @@
 import io
 import logging
+import os
+import json
+import time
+import uuid
+from datetime import datetime, timezone
 import torch
 from PIL import Image
 from torchvision import transforms
 from ts.torch_handler.base_handler import BaseHandler
 
 logger = logging.getLogger(__name__)
+
+MODEL_VERSION = os.environ.get("MODEL_VERSION", "unknown") # set during Docker build
 
 
 class FashionClassifierHandler(BaseHandler):
@@ -33,6 +40,7 @@ class FashionClassifierHandler(BaseHandler):
         super().__init__()
         self.transform = None
         self.initialized = False
+        self.model_version = MODEL_VERSION
     
     def initialize(self, context):
         super().initialize(context)
@@ -48,8 +56,56 @@ class FashionClassifierHandler(BaseHandler):
         ])
         
         self.initialized = True
-        logger.info("FashionClassifierHandler initialized successfully")
+        logger.info(f"FashionClassifierHandler initialized successfully. Model version: {self.model_version}")
         logger.info(f"Number of classes: {len(self.ID2LABEL)}")
+    
+    def _log_request(
+        self, request_id, status,
+        latency_ms, batch_size=1, 
+        error_message=None
+    ):
+        log_entry = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "request_id": request_id,
+            "model_version": self.model_version,
+            "status": status,
+            "latency_ms": round(latency_ms, 2),
+            "input amount": batch_size,
+        }
+        
+        if error_message:
+            log_entry["error"] = error_message
+        
+        logger.info(json.dumps(log_entry))
+    
+    def handle(self, data, context):
+        request_id = str(uuid.uuid4())
+        start_time = time.time()
+        batch_size = len(data) if data else 0
+        
+        try:
+            result = super().handle(data, context)
+            
+            latency_ms = (time.time() - start_time) * 1000
+            self._log_request(
+                request_id=request_id,
+                status="success",
+                latency_ms=latency_ms,
+                batch_size=batch_size
+            )
+            
+            return result
+            
+        except Exception as e:
+            latency_ms = (time.time() - start_time) * 1000
+            self._log_request(
+                request_id=request_id,
+                status="error",
+                latency_ms=latency_ms,
+                batch_size=batch_size,
+                error_message=str(e)
+            )
+            raise
     
     def preprocess(self, data):
         images = []

@@ -2,6 +2,9 @@ FROM pytorch/torchserve:latest-cpu
 
 USER root
 
+ARG MODEL_VERSION=unknown
+ENV MODEL_VERSION=${MODEL_VERSION}
+
 RUN mkdir -p /home/model-server/model-store
 
 COPY model-store/fashion_classifier.mar /home/model-server/model-store/
@@ -23,3 +26,4 @@ CMD ["torchserve", \
      "--model-store", "/home/model-server/model-store", \
      "--models", "fashion_classifier=fashion_classifier.mar", \
      "--ts-config", "/home/model-server/config.properties"]
+     
